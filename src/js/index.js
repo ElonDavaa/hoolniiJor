@@ -20,10 +20,15 @@ const controlSearch = async () => {
         // Шинээр хайлтын обьектийг үүсгэж өгнө
         state.search = new Search(query);
         // Хайлт хийхэд зориулж дэлгэцийг UI бэлтгэнэ
+        searchView.searchClear();
+        searchView.clearSearchResult();
         // Хайлтыг гүйцэтгэнэ
          await state.search.doSearch();
         // Хайлтын үр дүнг дэлгэцэнд харуулна
-        searchView.renderRecipes(state.search.result);
+        if (state.search.recipes === undefined){
+            alert("хайлтаар илэрцгүй"); 
+        } 
+        else searchView.renderRecipes(state.search.recipes);
     }
 };
 elements.searchForm.addEventListener("submit", e => {

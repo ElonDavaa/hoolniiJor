@@ -8,10 +8,11 @@ export default class Search {
         try {
         let result = await axios("https://forkify-api.herokuapp.com/api/v2/recipes?search=" + this.query);
         this.recipes = result.data.data.recipes;
+        // console.log(this.recipes);
         return this.recipes;
 
         } catch (error){
-            alert("алдаа гарлаа: " + error);
+            console.log("алдаа гарлаа: " + error);
         }
         
     
