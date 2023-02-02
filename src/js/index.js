@@ -5,7 +5,9 @@ import * as searchView from "./view/viewSearch";
 import Recipe from "./Model/recipe";
 import {renderRecipe, clearRecipe, highlightSelectedRecipe, renderNairlaga, renderOrts} from "./view/recipeView";
 import List from "./Model/list";
+import Likes from "./Model/like";
 import * as listView from "./view/listView";
+import * as likesView from "./view/likesView";
 
 /* 
 Web app төлөв 
@@ -55,6 +57,7 @@ elements.pageButtons.addEventListener("click", e => {
 const controlRecipe = async () => {
 //     // URL -аас ID -ийг салгах
     const id = window.location.hash.replace("#", "");
+   
 //     // Жорын моделийг үүсгэж өгнө
     state.Recipe = new Recipe(id);
 //     // UI дэлгэцийг бэлтгэнэ    
@@ -64,13 +67,23 @@ const controlRecipe = async () => {
     await state.Recipe.getRecipe();
 
 //     // Жороо дэлгэцэнд гаргана
-    renderRecipe(state.Recipe);  
+    renderRecipe(state.Recipe, state.likes.isLiked(id));  
     
 };
 
 // window.addEventListener("hashchange", controlRecipe);
 // window.addEventListener("load", controlRecipe);
 ["hashchange", "load"].forEach(event => window.addEventListener(event, controlRecipe));
+
+// Программ шинээр эхлэхэд бэлдэх
+window.addEventListener("load", e => {
+    // Шинээр лайк моделийг апп дөнгөж ачааллагдахад үүсгэнэ
+    if(!state.likes) state.likes = new Likes();
+    // Лайк цэсийг гаргах эсэхийг шийдэх
+    likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+    // Лайкууд байвал тэдгээрийг цэсэнд нэмж харуулна
+    state.likes.like.forEach(like => likesView.renderLike(like));
+});
 
 // Найрлагын контролер
 
@@ -90,9 +103,35 @@ const controlList = () => {
     });
 };
 
+// Like Контроллер
+
+const controlLike = () => {
+//    Лайкын моделийг үүсгэнэ
+if(!state.likes) state.likes = new Likes();
+// Одоо харагдаж байгаа жорын ID -г олж авах
+const currentRecipeId = state.Recipe.id;
+// Энэ жорыг лайкалсан эсэхийг шалгах
+if (state.likes.isLiked(currentRecipeId)){
+    // Лайкласан бол лайкийг нь болиулна
+    state.likes.deleteLike(currentRecipeId);
+    // Лайкийн цэснээс устгах функц дуудав
+    likesView.deleteNewLike(currentRecipeId);
+    // лайк товчны лайкалсан байдлыг болиулах функц дуудав
+    likesView.toggleLikeBtn(false);
+} else {
+    // Лайклаагүй бол лайклана
+   const newLike = state.likes.addLike(currentRecipeId, state.Recipe.title, state.Recipe.publisher, state.Recipe.image_url);
+    likesView.renderLike(newLike);
+    likesView.toggleLikeBtn(true);
+}
+    likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+};
+
 elements.recipeDiv.addEventListener("click", e => {
     if(e.target.matches(".recipe__btn, .recipe__btn *")) {
         controlList();
+    }else if (e.target.matches(".recipe__love, .recipe__love *")){
+        controlLike();
     }
 });
 
