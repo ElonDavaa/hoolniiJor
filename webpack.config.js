@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-  mode: 'none',
+  // mode: 'none',
   entry: './src/js/index.js',
   output: {
    filename: 'js/main.js',
@@ -10,7 +10,7 @@ module.exports = {
   devServer: {
     static: './docs',
   },
-  devtool: 'inline-source-map',
+  // devtool: 'inline-source-map',
   plugins: [ 
     new HtmlWebpackPlugin({ 
       filename: 'index.html',
@@ -25,9 +25,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: [
-              ['@babel/preset-env', { targets: "defaults" }]
-            ]
+            presets: ['@babel/preset-env']
           }
         }
       }
